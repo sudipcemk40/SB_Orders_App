@@ -31,7 +31,7 @@ func AddCircular(w http.ResponseWriter, r *http.Request) {
 		"message": "Circular received successfully",
 	})
 }
-func GetCirculars(w http.ResponseWriter, r *http.Request) {
+func GetCircularsOld(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
 		http.Error(w, "Only GET method allowed", http.StatusMethodNotAllowed)
@@ -155,4 +155,35 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dashboard)
+}
+func GetCirculars(w http.ResponseWriter, r *http.Request) {
+	db := ConnectDB()
+	defer db.Close()
+
+	rows, err := db.Query(`
+        SELECT circular_no, pdf_name
+        FROM circulars
+        ORDER BY circular_no DESC
+    `)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	defer rows.Close()
+
+	type Circular struct {
+		CircularNo string `json:"circularNo"`
+		PDFName    string `json:"pdfName"`
+	}
+
+	var circulars []Circular
+
+	for rows.Next() {
+		var c Circular
+		rows.Scan(&c.CircularNo, &c.PDFName)
+		circulars = append(circulars, c)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(circulars)
 }
