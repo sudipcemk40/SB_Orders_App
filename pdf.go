@@ -16,4 +16,5 @@ func GetPDFName(db *sql.DB, no string) (string, error) {
 
 	fmt.Println("Error:", err)
 	fmt.Println("PDF Name:", pdfName)
+	return pdfName, err
 }

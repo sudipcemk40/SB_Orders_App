@@ -145,3 +145,14 @@ func OpenPDF(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(path)
 	http.ServeFile(w, r, path)
 }
+func DashboardHandler(w http.ResponseWriter, r *http.Request) {
+	db := ConnectDB()
+	defer db.Close()
+	dashboard, err := GetDashboard(db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dashboard)
+}

@@ -12,6 +12,7 @@ func main() {
 	http.HandleFunc("/category", GetCircularsByCategoryHandler)
 	http.HandleFunc("/subject", GetCircularsBySubjectHandler)
 	http.HandleFunc("/pdf", OpenPDF)
+	http.HandleFunc("/dashboard", DashboardHandler)
 	fmt.Println("Server running on http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
