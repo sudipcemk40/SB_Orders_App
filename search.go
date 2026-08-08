@@ -23,7 +23,7 @@ ORDER BY circular_date DESC
 	}
 	defer rows.Close()
 
-	var circulars []Circular
+	circulars := make([]Circular, 0)
 
 	for rows.Next() {
 		var c Circular
