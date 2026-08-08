@@ -1,20 +1,32 @@
 package main
 
-import (
-	"database/sql"
-	"fmt"
-)
+import "strings"
 
-func GetPDFName(db *sql.DB, no string) (string, error) {
+func GetPDFName(no string) string {
 
-	var pdfName string
-	fmt.Println("Searching for:", no)
-	err := db.QueryRow(
-		"SELECT pdf_name FROM circulars WHERE circular_no=$1",
-		no,
-	).Scan(&pdfName)
+	// Format 1:
+	// SB-25/2015 -> SB25-2015.pdf
 
-	fmt.Println("Error:", err)
-	fmt.Println("PDF Name:", pdfName)
-	return pdfName, err
+	if strings.Contains(no, "/") {
+
+		parts := strings.Split(no, "/")
+
+		if len(parts) != 2 {
+			return ""
+		}
+
+		circularPart := strings.ReplaceAll(parts[0], "-", "")
+		year := parts[1]
+
+		return circularPart + "-" + year + ".pdf"
+	}
+
+	// Format 2:
+	// SB25-2015 -> SB25-2015.pdf
+
+	if strings.HasPrefix(no, "SB") && strings.Contains(no, "-") {
+		return no + ".pdf"
+	}
+
+	return ""
 }

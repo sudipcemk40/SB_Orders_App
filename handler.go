@@ -133,9 +133,9 @@ func OpenPDF(w http.ResponseWriter, r *http.Request) {
 	db := ConnectDB()
 	defer db.Close()
 
-	pdfName, err := GetPDFName(db, no)
-	if err != nil {
-		http.Error(w, "PDF not found", http.StatusNotFound)
+	pdfName := GetPDFName(no)
+	if pdfName == "" {
+		http.Error(w, "Invalid circular number", http.StatusBadRequest)
 		return
 	}
 	fmt.Println(pdfName)
